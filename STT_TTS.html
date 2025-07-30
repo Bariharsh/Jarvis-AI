@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speech to Text and Text to Speech</title>
+</head>
+<body>
+  <h1>Voice Assistant</h1>
+  <button id="start-btn">Start Listening</button>
+  <p><strong>You said:</strong> <span id="output"></span></p>
+
+  <script>
+    // Check browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    const startBtn = document.getElementById('start-btn');
+    const output = document.getElementById('output');
+
+    startBtn.addEventListener('click', () => {
+      recognition.start();
+      console.log("Listening...");
+    });
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      console.log("User said:", transcript);
+      output.textContent = transcript;
+
+      // Simple reply logic
+      let response = "I didn't understand that.";
+      if (transcript.toLowerCase().includes("hello")) {
+        response = "Hi there! How can I help you?";
+      } else if (transcript.toLowerCase().includes("time")) {
+        response = "The current time is " + new Date().toLocaleTimeString();
+      }
+
+      // Speak the response
+      const utterance = new SpeechSynthesisUtterance(response);
+      speechSynthesis.speak(utterance);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+    };
+  </script>
+</body>
+</html>
